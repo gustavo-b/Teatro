@@ -15,7 +15,7 @@ int Get_Random_Int(int min, int max){
     return min + (r / buckets);
 }
 
-void teatro(int reservado[18][20]) {
+void Teatro(int reservado[18][20]) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		printf("%c\t|---| ", i + 'A');
@@ -57,22 +57,30 @@ void teatro(int reservado[18][20]) {
 		printf("\n");
 }
 
-int main () {
-	srand((unsigned int)time(NULL));
-	
-	int reservados[18][20];
-	
+void Preencher(int reservados[18][20]) {
+	int i, j;
+	for (i = 0; i < 160; i++) {
+		reservados[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)] = 1;
+	}
+}
+
+void Inicializar(int reservados[18][20]) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
 			reservados[i][j] = 0;
 		}
 	}
+}
+
+int main () {
+	srand((unsigned int)time(NULL));
 	
-	for (i = 0; i < 160; i++) {
-		reservados[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)] = 1;
-	}
+	int reservados[18][20];
 	
-	teatro(reservados);
+	Inicializar(reservados);
+	Preencher(reservados);
+	Teatro(reservados);
+	
 	return 0;
 }
