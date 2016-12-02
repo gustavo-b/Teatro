@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+typedef int Teatro[18][20];
+
 int Get_Random_Int(int min, int max){
     int r;
     const unsigned int range = 1 + max - min;
@@ -15,7 +17,7 @@ int Get_Random_Int(int min, int max){
     return min + (r / buckets);
 }
 
-void Teatro(int reservado[18][20]) {
+void Exibir_Teatro(Teatro reservado) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		printf("%c\t|---| ", i + 'A');
@@ -34,7 +36,7 @@ void Teatro(int reservado[18][20]) {
 				printf("#  ");
 			}
 		}
-		printf("|---|");
+		printf("\b|---|");
 		printf("\n");
 	}
 	printf(" \t      ");
@@ -53,22 +55,22 @@ void Teatro(int reservado[18][20]) {
 				printf("%d ", j + 1);
 			}
 		}
-		printf("     ");
+		printf("\b     ");
 		printf("\n");
 }
 
-void Preencher(int reservados[18][20]) {
+void Preencher(Teatro reservado) {
 	int i, j;
 	for (i = 0; i < 160; i++) {
-		reservados[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)] = 1;
+		reservado[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)] = 1;
 	}
 }
 
-void Inicializar(int reservados[18][20]) {
+void Inicializar(Teatro reservado) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
-			reservados[i][j] = 0;
+			reservado[i][j] = 0;
 		}
 	}
 }
@@ -76,11 +78,11 @@ void Inicializar(int reservados[18][20]) {
 int main () {
 	srand((unsigned int)time(NULL));
 	
-	int reservados[18][20];
+	Teatro reservado;
 	
-	Inicializar(reservados);
-	Preencher(reservados);
-	Teatro(reservados);
+	Inicializar(reservado);
+	Preencher(reservado);
+	Exibir_Teatro(reservado);
 	
 	return 0;
 }
