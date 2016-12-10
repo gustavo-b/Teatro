@@ -1,8 +1,23 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+### Above combination will ignore all files without extension ###
+
+#Prerequisites
+*.d
+
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
+*.dat
 
 # Precompiled Headers
 *.gch
