@@ -14,6 +14,7 @@ typedef struct {
 typedef struct {
 	char posicao[4];
 	char status[2];
+	Pessoa pessoa;
 }Assento;
 
 typedef Assento Sessao[18][20];
@@ -22,6 +23,7 @@ typedef struct {
 	char nome[20];
 	Sessao sessao;
 	int data;//reservado para cadastro de hora
+	float ingresso;
 }Espetaculo;
 
 typedef struct {
@@ -220,6 +222,17 @@ void Inicializar_Sessao(Sessao sessao) {
 			sessao[i][j].status[0] = VAGO;
 		}
 	}
+}
+
+void Ler_Espetaculo() {
+	
+}
+
+void Ler_Pessoa(Pessoa *pessoa) {
+	printf("Digite seu nome: \n");
+	scanf("%s", pessoa->nome);
+	printf("Digite seu CPF: \n");
+	scanf("%d", &pessoa->CPF);
 }
 
 void cls(void){
