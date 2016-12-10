@@ -10,7 +10,7 @@
 typedef struct tm *Data;
 
 typedef struct {
-	char nome[20];
+	char nome[200];
 	int CPF;
 }Pessoa;
 
@@ -23,7 +23,7 @@ typedef struct {
 typedef Assento Sessao[18][20];
 
 typedef struct {
-	char nome[20];
+	char nome[200];
 	Sessao sessao;
 	Data data;
 	float ingresso;
@@ -208,21 +208,21 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 }
 
-void Preencher_Sessao(Sessao *sessao) {
+void Preencher_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 360; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)]->status[0] = VENDIDO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
 	}
 	for (i = 0; i < 60; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)]->status[0] = RESERVADO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
 	}
 }
 
-void Inicializar_Sessao(Sessao *sessao) {
+void Inicializar_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
-			sessao[i][j]->status[0] = VAGO;
+			sessao[i][j].status[0] = VAGO;
 		}
 	}
 }
@@ -235,16 +235,25 @@ void Tempo_Atual(Data *data) {
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
-	scanf("%s", espetaculo->nome);
-	printf("\nPreço do ingresso: ");
+	fgets (espetaculo->nome, 200, stdin);
+	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
-	Inicializar_Sessao(&espetaculo->sessao);
-	Tempo_Atual(&espetaculo->data); // Temporário
+	Inicializar_Sessao(espetaculo->sessao);
+	Preencher_Sessao(espetaculo->sessao);
+	Tempo_Atual(&espetaculo->data); //Temporário
+}
+
+void Exibir_Espetaculo(Espetaculo espetaculo) {
+	printf("\nNome do espetaculo: %s", espetaculo.nome);
+	printf("\nData do espetaculo: %s", asctime(espetaculo.data));
+	printf("\nPreco do ingresso: %.2f", espetaculo.ingresso);
+	printf("\nLotacao da sessao:\n");
+	Exibir_Sessao(espetaculo.sessao);
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
 	printf("\nDigite seu nome: ");
-	scanf("%s", pessoa->nome);
+	fgets (pessoa->nome, 200, stdin);
 	printf("\nDigite seu CPF: ");
 	scanf("%d", &pessoa->CPF);
 }
@@ -263,14 +272,10 @@ int main () {
 	srand((unsigned int)time(NULL));
 	
 	Sessao sessao;
+	Espetaculo espetaculo;
 	
-	Inicializar_Sessao(&sessao);
-	Preencher_Sessao(&sessao);
-	Exibir_Sessao(sessao);
-	
-	Data data;
-	Tempo_Atual(&data);
-	printf("\n\n\n%s", asctime(data));
+	Ler_Espetaculo(&espetaculo);
+	Exibir_Espetaculo(espetaculo);
 	
 	return 0;
 }
