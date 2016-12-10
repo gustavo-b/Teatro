@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
 #define MAX 100
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
+
+typedef struct tm *Data;
 
 typedef struct {
 	char nome[20];
@@ -136,7 +139,7 @@ void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
     else {
         *pessoa = Espera->Item[Espera->Inicio];
         printf("Pessoa removida:\n");
-		Exibir_Pessoa(*pessoa);
+		//Exibir_Pessoa(*pessoa);
         Espera->Inicio = (Espera->Inicio + 1) % MAX;
         Espera->Total--;
     }
@@ -224,6 +227,12 @@ void Inicializar_Sessao(Sessao sessao) {
 	}
 }
 
+void Tempo_Atual(Data *data) {
+	time_t tempo_atual;
+	time(&tempo_atual);
+	*data = localtime(&tempo_atual);
+}
+
 void Ler_Espetaculo() {
 	
 }
@@ -253,6 +262,10 @@ int main () {
 	Inicializar_Sessao(sessao);
 	Preencher_Sessao(sessao);
 	Exibir_Sessao(sessao);
+	
+	Data data;
+	Tempo_Atual(&data);
+	printf("\n\n\n%s", asctime(data));
 	
 	return 0;
 }
