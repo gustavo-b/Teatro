@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#define MAX 100
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
@@ -15,8 +16,81 @@ typedef Assento Sessao[18][20];
 typedef struct {
 	char nome[20];
 	Sessao sessao;
-	//reservado para cadastro de hora
+	int data;//reservado para cadastro de hora
 }Espetaculo;
+
+typedef struct {
+    Espetaculo Item[MAX];
+    int Prim, Ult;
+}Lista_est;
+
+void Criar_Lista_Vazia(Lista_est *Teatro) {
+    Teatro->Prim = 0;
+    Teatro->Ult = Teatro->Prim;
+}
+
+int Verifica_Lista_Vazia(Lista_est Teatro) {
+    return (Teatro.Prim == Teatro.Ult);
+}
+
+int Verifica_Lista_Cheia(Lista_est Teatro) {
+	return (Teatro.Ult == MAX);
+}
+
+void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
+	int p;
+
+	p = Teatro->Prim;
+	if(Verifica_Lista_Cheia(*Teatro)){
+		printf("Lista lotada, não pode ser adicionado mais dados.");
+	}
+	else {
+		p = Teatro->Prim;
+		while ((p < Teatro->Ult) && (espetaculo.data > Teatro->Item[p].data)) {
+			p++;
+		}
+		if (p == Teatro->Ult) {
+			Teatro->Item[p] = espetaculo;
+			Teatro->Ult++;
+		}
+		else {
+			if ((espetaculo.data != Teatro->Item[p].data)) {
+				int i;
+				for (i = Teatro->Ult; i > p; i--) {
+					Teatro->Item[i] = Teatro->Item[i - 1];
+				}
+				Teatro->Item[p] = espetaculo;
+				Teatro->Ult++;
+			}
+		}
+	}
+}
+
+void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
+	int p, i;
+
+	if (Verifica_Lista_Vazia(*Teatro)) {
+		printf("A lista já está vazia, impossível remover elemento.");
+	}
+	else {
+		p = Teatro->Prim;
+
+		while ((p < Teatro->Ult) && (espetaculo->data != Teatro->Item[p].data)) {
+			p++;
+		}
+		if (p == Teatro->Ult){
+			printf("Espetaculo nao foi encontrado no sistema!\n");
+		}
+		else {
+			*espetaculo = Teatro->Item[p];
+            printf("Espetaculo removido do sistema!\n");
+			for (i = p; i < Teatro->Ult; i++) {
+				Teatro->Item[i] = Teatro->Item[i + 1];
+			}
+			Teatro->Ult--;
+		}
+	}
+}
 
 int Get_Random_Int(int min, int max) {
     int r;
@@ -31,15 +105,15 @@ int Get_Random_Int(int min, int max) {
     return min + (r / buckets);
 }
 
-void Exibir_Sessao(Sessao reservado) {
+void Exibir_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		printf("%c\t|---| ", i + 'A');
 		for (j = 0; j < 10; j++) {
-			if (reservado[i][j].status[0] == RESERVADO) {
+			if (sessao[i][j].status[0] == RESERVADO) {
 				printf("%c  ", RESERVADO);
 			} else {
-				if (reservado[i][j].status[0] == VENDIDO) {
+				if (sessao[i][j].status[0] == VENDIDO) {
 					printf("%c  ", VENDIDO);
 				} else {
 					printf("%c  ", VAGO);
@@ -48,10 +122,10 @@ void Exibir_Sessao(Sessao reservado) {
 		}
 		printf("\b|-----| ");
 		for (j; j < 20; j++) {
-			if (reservado[i][j].status[0] == RESERVADO) {
+			if (sessao[i][j].status[0] == RESERVADO) {
 				printf("%c  ", RESERVADO);
 			} else {
-				if (reservado[i][j].status[0] == VENDIDO) {
+				if (sessao[i][j].status[0] == VENDIDO) {
 					printf("%c  ", VENDIDO);
 				} else {
 					printf("%c  ", VAGO);
@@ -81,21 +155,21 @@ void Exibir_Sessao(Sessao reservado) {
 		printf("\n");
 }
 
-void Preencher(Sessao reservado) {
+void Preencher(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 360; i++) {
-		reservado[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
 	}
 	for (i = 0; i < 60; i++) {
-		reservado[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
 	}
 }
 
-void Inicializar(Sessao reservado) {
+void Inicializar_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
-			reservado[i][j].status[0] = VAGO;
+			sessao[i][j].status[0] = VAGO;
 		}
 	}
 }
@@ -103,11 +177,11 @@ void Inicializar(Sessao reservado) {
 int main () {
 	srand((unsigned int)time(NULL));
 	
-	Sessao reservado;
+	Sessao sessao;
 	
-	Inicializar(reservado);
-	Preencher(reservado);
-	Exibir_Sessao(reservado);
+	Inicializar_Sessao(sessao);
+	Preencher(sessao);
+	Exibir_Sessao(sessao);
 	
 	return 0;
 }
