@@ -222,6 +222,16 @@ void Inicializar_Sessao(Sessao sessao) {
 	}
 }
 
+void cls(void){
+    #ifdef LINUX
+        printf("\e[H\e[2J");
+        #elif defined WIN32
+        system ("cls");
+    #else
+        printf("\e[H\e[2J");
+    #endif
+}
+
 int main () {
 	srand((unsigned int)time(NULL));
 	
