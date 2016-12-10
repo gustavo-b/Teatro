@@ -9,6 +9,8 @@
 
 typedef struct tm *Data;
 
+FILE *arq;
+
 typedef struct {
 	char nome[200];
 	int CPF;
@@ -272,6 +274,21 @@ void gravar_Arquivo(Espetaculo *espetaculo, Lista_est *Teatro) {
     }
 }
 
+void ler_Arquivo (Espetaculo espetaculo, Lista_est *Teatro) {
+    arq = fopen("arquivo.dat", "rb");
+    if (arq!=NULL) {
+        Criar_Lista_Vazia(&(*Teatro));
+        espetaculo.nome[0] = NULL;
+        while (!feof(arq))
+        {
+            if(espetaculo.nome[0]  != NULL)
+            Insere_Elemento_Lista(&(*Teatro), espetaculo);
+            fread(&espetaculo, sizeof(Espetaculo), 1, arq);   //fechamento
+        }
+        fclose(arq);
+    }
+}
+
 void cls(void){
     #ifdef LINUX
         printf("\e[H\e[2J");
@@ -287,9 +304,18 @@ int main () {
 
 	Sessao sessao;
 	Espetaculo espetaculo;
+	Lista_est Teatro;
 
-	Ler_Espetaculo(&espetaculo);
+	ler_Arquivo(espetaculo, &Teatro);
+	//Ler_Espetaculo(&espetaculo);
+    Exibir_Espetaculo(espetaculo);
+
+
+
+
 	Exibir_Espetaculo(espetaculo);
+
+	gravar_Arquivo(&espetaculo, &Teatro);
 
 	return 0;
 }
