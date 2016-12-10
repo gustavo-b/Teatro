@@ -258,6 +258,20 @@ void Ler_Pessoa(Pessoa *pessoa) {
 	scanf("%d", &pessoa->CPF);
 }
 
+void gravar_Arquivo(Espetaculo *espetaculo, Lista_est *Teatro) {
+    arq = fopen("arquivo.dat", "wb");
+    if(arq!=NULL)
+    {
+        int p = Teatro->Prim;
+        int i;
+        for(i = Teatro->Ult; i > p; i--)
+        {
+            fwrite(&(Teatro->Item[i]), sizeof(Espetaculo),1,arq);
+        }
+        fclose(arq);
+    }
+}
+
 void cls(void){
     #ifdef LINUX
         printf("\e[H\e[2J");
@@ -270,12 +284,12 @@ void cls(void){
 
 int main () {
 	srand((unsigned int)time(NULL));
-	
+
 	Sessao sessao;
 	Espetaculo espetaculo;
-	
+
 	Ler_Espetaculo(&espetaculo);
 	Exibir_Espetaculo(espetaculo);
-	
+
 	return 0;
 }
