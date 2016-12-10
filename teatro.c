@@ -25,7 +25,7 @@ typedef Assento Sessao[18][20];
 typedef struct {
 	char nome[20];
 	Sessao sessao;
-	int data;//reservado para cadastro de hora
+	Data data;
 	float ingresso;
 }Espetaculo;
 
@@ -71,7 +71,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 	p = Teatro->Prim;
 	if(Verifica_Lista_Cheia(*Teatro)){
-		printf("Lista lotada, não pode ser adicionado mais dados.");
+		printf("Lista lotada, não pode ser adicionado mais dados.\n");
 	}
 	else {
 		p = Teatro->Prim;
@@ -97,7 +97,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 void Enfileirar(Fila_est* Espera, Pessoa pessoa) {
     if(Verifica_Fila_Cheia(*Espera)) {
-        printf("Nao podem ser inseridos mais pessoas, fila cheia.");
+        printf("Nao podem ser inseridos mais pessoas, fila cheia.\n");
     }
     else {
         Espera->Item[Espera->Fim] = pessoa;
@@ -110,7 +110,7 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 	int p, i;
 
 	if (Verifica_Lista_Vazia(*Teatro)) {
-		printf("A lista já está vazia, impossível remover elemento.");
+		printf("A lista já está vazia, impossível remover elemento.\n");
 	}
 	else {
 		p = Teatro->Prim;
@@ -208,21 +208,21 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 }
 
-void Preencher_Sessao(Sessao sessao) {
+void Preencher_Sessao(Sessao *sessao) {
 	int i, j;
 	for (i = 0; i < 360; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)]->status[0] = VENDIDO;
 	}
 	for (i = 0; i < 60; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
+		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)]->status[0] = RESERVADO;
 	}
 }
 
-void Inicializar_Sessao(Sessao sessao) {
+void Inicializar_Sessao(Sessao *sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
-			sessao[i][j].status[0] = VAGO;
+			sessao[i][j]->status[0] = VAGO;
 		}
 	}
 }
@@ -233,14 +233,19 @@ void Tempo_Atual(Data *data) {
 	*data = localtime(&tempo_atual);
 }
 
-void Ler_Espetaculo() {
-	
+void Ler_Espetaculo(Espetaculo *espetaculo) {
+	printf("\nNome do espetaculo: ");
+	scanf("%s", espetaculo->nome);
+	printf("\nPreço do ingresso: ");
+	scanf("%f", &espetaculo->ingresso);
+	Inicializar_Sessao(&espetaculo->sessao);
+	Tempo_Atual(&espetaculo->data); // Temporário
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
-	printf("Digite seu nome: \n");
+	printf("\nDigite seu nome: ");
 	scanf("%s", pessoa->nome);
-	printf("Digite seu CPF: \n");
+	printf("\nDigite seu CPF: ");
 	scanf("%d", &pessoa->CPF);
 }
 
@@ -259,8 +264,8 @@ int main () {
 	
 	Sessao sessao;
 	
-	Inicializar_Sessao(sessao);
-	Preencher_Sessao(sessao);
+	Inicializar_Sessao(&sessao);
+	Preencher_Sessao(&sessao);
 	Exibir_Sessao(sessao);
 	
 	Data data;
