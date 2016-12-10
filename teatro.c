@@ -7,6 +7,11 @@
 #define VAGO 'O'
 
 typedef struct {
+	char nome[20];
+	int CPF;
+}Pessoa;
+
+typedef struct {
 	char posicao[4];
 	char status[2];
 }Assento;
@@ -24,17 +29,36 @@ typedef struct {
     int Prim, Ult;
 }Lista_est;
 
+typedef struct {
+    Pessoa Item[MAX];
+    int Inicio, Fim, Total;
+} Fila_est;
+
 void Criar_Lista_Vazia(Lista_est *Teatro) {
     Teatro->Prim = 0;
     Teatro->Ult = Teatro->Prim;
+}
+
+void Criar_Fila_Vazia(Fila_est *Espera) {
+    Espera->Inicio = 0;
+    Espera->Fim = 0;
+    Espera->Total = 0;
 }
 
 int Verifica_Lista_Vazia(Lista_est Teatro) {
     return (Teatro.Prim == Teatro.Ult);
 }
 
+int Verifica_Fila_Vazia(Fila_est Espera) {
+    return(Espera.Inicio == Espera.Fim);
+}
+
 int Verifica_Lista_Cheia(Lista_est Teatro) {
 	return (Teatro.Ult == MAX);
+}
+
+int Verifica_Fila_Cheia(Fila_est Espera) {
+    return((Espera.Fim + 1) % MAX == Espera.Fim );
 }
 
 void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
@@ -66,6 +90,17 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 	}
 }
 
+void Enfileirar(Fila_est* Espera, Pessoa pessoa) {
+    if(Verifica_Fila_Cheia(*Espera)) {
+        printf("Nao podem ser inseridos mais pessoas, fila cheia.");
+    }
+    else {
+        Espera->Item[Espera->Fim] = pessoa;
+        Espera->Fim = (Espera->Fim + 1) % MAX;
+        Espera->Total++;
+    }
+}
+
 void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 	int p, i;
 
@@ -78,7 +113,7 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 		while ((p < Teatro->Ult) && (espetaculo->data != Teatro->Item[p].data)) {
 			p++;
 		}
-		if (p == Teatro->Ult){
+		if (p == Teatro->Ult) {
 			printf("Espetaculo nao foi encontrado no sistema!\n");
 		}
 		else {
@@ -90,6 +125,19 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 			Teatro->Ult--;
 		}
 	}
+}
+
+void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
+    if (Verifica_Fila_Vazia(*Espera)) {
+        printf("Nao há setores na fila.");
+    }
+    else {
+        *pessoa = Espera->Item[Espera->Inicio];
+        printf("Pessoa removida:\n");
+		Exibir_Pessoa(*pessoa);
+        Espera->Inicio = (Espera->Inicio + 1) % MAX;
+        Espera->Total--;
+    }
 }
 
 int Get_Random_Int(int min, int max) {
@@ -155,7 +203,7 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 }
 
-void Preencher(Sessao sessao) {
+void Preencher_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 360; i++) {
 		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
@@ -180,7 +228,7 @@ int main () {
 	Sessao sessao;
 	
 	Inicializar_Sessao(sessao);
-	Preencher(sessao);
+	Preencher_Sessao(sessao);
 	Exibir_Sessao(sessao);
 	
 	return 0;
