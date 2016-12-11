@@ -215,7 +215,7 @@ void Exibir_Sessao(Sessao sessao) {
 void Preencher_Sessao(Sessao sessao, int l, int c) {
 	if(sessao[l][c].status[0] == VAGO) {
 		sessao[l][c].status[0] = VENDIDO;
-		printf("Poltrona ocupada.");
+		printf("Poltrona Vendida");
 	} else {
 		printf("Poltrona Ocupada");
 	}
@@ -390,7 +390,7 @@ int main () {
 					coluna = (coluna * 10) + (poltrona[i] - '0');
 					i++;
 				}
-				Preencher_Sessao(Teatro.Item[espe].sessao, linha, coluna);
+				Preencher_Sessao(Teatro.Item[espe].sessao, linha, coluna-1);
 			    break;
 
 			case 5:
