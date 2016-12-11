@@ -288,7 +288,8 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
     int i;
 
     if(Verifica_Lista_Vazia(Teatro)) {
-        printf("A lista está vazia.");
+        printf("Nao ha espetaculos cadastrados\n");
+        return 0;
     }
     else {
         i = Teatro.Prim;
@@ -299,15 +300,17 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
             Exibir_Espetaculo(Teatro.Item[i]);
             return i;
         }
-        else printf("Setor nao encontrado.");
-        return -1;
+        else printf("Espetaculo nao cadastrado\n");
+        return 0;
     }
 
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
+    setbuf(stdin, NULL);
 	printf("\nDigite seu nome: ");
-	fgets (pessoa->nome, 50, stdin);
+	scanf("%[^\n]s", pessoa->nome);
+	setbuf(stdin, NULL);
 	printf("\nDigite seu CPF: ");
 	scanf("%d", &pessoa->CPF);
 }
@@ -390,17 +393,20 @@ int main () {
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
 				int espe = Consultar_Espetaculo(Teatro, escolha);
-				printf("\nEscolha a poltrona Desejada: ");
-				char poltrona[4];
-				scanf("%s", poltrona);
-				int linha = poltrona[0] - 'A';
-				int i = 1;
-				int coluna = 0;
-				while(poltrona[i] != '\0') {
-					coluna = (coluna * 10) + (poltrona[i] - '0');
-					i++;
+				if(espe) {
+                    printf("\nEscolha a poltrona Desejada: ");
+                    char poltrona[4];
+                    scanf("%s", poltrona);
+                    int linha = poltrona[0] - 'A';
+                    int i = 1;
+                    int coluna = 0;
+                    while(poltrona[i] != '\0') {
+                        coluna = (coluna * 10) + (poltrona[i] - '0');
+                        i++;
+                    }
+                    Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
+                    Vender_Ingresso(Teatro.Item[espe].sessao, linha, coluna-1);
 				}
-				Vender_Ingresso(Teatro.Item[espe].sessao, linha, coluna-1);
 			    break;
 
 			case 5:
@@ -408,16 +414,20 @@ int main () {
 			    printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-				printf("\nEscolha a poltrona Desejada: ");
-				scanf("%s", poltrona);
-				linha = poltrona[0] - 'A';
-				i = 1;
-				coluna = 0;
-				while(poltrona[i] != '\0') {
-					coluna = (coluna * 10) + (poltrona[i] - '0');
-					i++;
-				}
-				Reservar_Ingresso(Teatro.Item[espe].sessao, linha, coluna-1);
+                if(espe) {
+                    printf("\nEscolha a poltrona Desejada: ");
+                    char poltrona[4];
+                    scanf("%s", poltrona);
+                    int linha = poltrona[0] - 'A';
+                    int i = 1;
+                    int coluna = 0;
+                    while(poltrona[i] != '\0') {
+                        coluna = (coluna * 10) + (poltrona[i] - '0');
+                        i++;
+                    }
+                    Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
+                    Reservar_Ingresso(Teatro.Item[espe].sessao, linha, coluna-1);
+                }
 
 			    break;
 
