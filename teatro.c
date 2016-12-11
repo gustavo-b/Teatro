@@ -74,7 +74,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 	p = Teatro->Prim;
 	if(Verifica_Lista_Cheia(*Teatro)){
-		printf("Lista lotada, não pode ser adicionado mais dados.\n");
+		printf("Foi atingida a capacidade máxima de espetáculos do teatro!\n");
 	}
 	else {
 		p = Teatro->Prim;
@@ -100,7 +100,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 void Enfileirar(Fila_est* Espera, Pessoa pessoa) {
     if(Verifica_Fila_Cheia(*Espera)) {
-        printf("Nao podem ser inseridos mais pessoas, fila cheia.\n");
+        printf("Nao podem ser inseridos mais pessoas, fila de espera cheia.\n");
     }
     else {
         Espera->Item[Espera->Fim] = pessoa;
@@ -137,7 +137,7 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 
 void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
     if (Verifica_Fila_Vazia(*Espera)) {
-        printf("Nao hÃ¡ setores na fila.");
+        printf("Nao ha setores na fila.");
     }
     else {
         *pessoa = Espera->Item[Espera->Inicio];
@@ -316,12 +316,12 @@ int main () {
 
 		while (index != 0 && erros < LIMITE){
 		//Fornece as opcoes do TAD.
-		printf("=============MENU Apolo Manager=============\n\n");
+		printf("=============MENU MACHADO DE ASSIS=============\n\n");
 		printf("Escolha alguma das opcoes abaixo:\n\n");
 		printf("0 - Sair do Sistema.\n");
 		printf("1 - Inserir Novo Espetaculo\n");
 		printf("2 - Exibir Espetaculo\n");
-		printf("=============================================\n");
+		printf("===============================================\n");
 
 		scanf("%d", &index);
 
