@@ -397,6 +397,10 @@ int main () {
                     printf("\nEscolha a poltrona Desejada: ");
                     char poltrona[4];
                     scanf("%s", poltrona);
+                    if(poltrona[0] > 64) {
+                        poltrona[0] = poltrona[0] - 32;
+                        //Converter minúsculo para maiúsculo
+                    }
                     int linha = poltrona[0] - 'A';
                     int i = 1;
                     int coluna = 0;
@@ -418,6 +422,9 @@ int main () {
                     printf("\nEscolha a poltrona Desejada: ");
                     char poltrona[4];
                     scanf("%s", poltrona);
+                    if(poltrona[0] > 64) {
+                        poltrona[0] = poltrona[0] - 32;
+                    }
                     int linha = poltrona[0] - 'A';
                     int i = 1;
                     int coluna = 0;
