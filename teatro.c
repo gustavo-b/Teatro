@@ -27,6 +27,7 @@ typedef Assento Sessao[18][20];
 
 typedef struct {
 	char nome[50];
+	int codigo;
 	Sessao sessao;
 	time_t data;
 	float ingresso;
@@ -238,8 +239,11 @@ void Tempo_Atual(time_t *data) {
 }
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
+	setbuf(stdin, NULL);
 	printf("\nNome do espetaculo: ");
 	scanf("%[^\n]s", espetaculo->nome);
+	printf("\nDigite o Codigo de Identificacao do Espetaculo: ");
+	scanf("%d", &espetaculo->codigo);
 	//fgets (espetaculo->nome, 50, stdin);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
@@ -249,6 +253,7 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 }
 
 void Exibir_Espetaculo(Espetaculo espetaculo) {
+	printf("Código: %d", espetaculo.codigo);
 	printf("\nNome do espetaculo: %s", espetaculo.nome);
 	printf("\nData do espetaculo: %s", ctime(&espetaculo.data));
 	printf("\nPreco do ingresso: %.2f", espetaculo.ingresso);
