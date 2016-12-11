@@ -6,6 +6,7 @@
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
+#define LIMITE 10
 
 typedef struct tm *Data;
 
@@ -237,7 +238,7 @@ void Tempo_Atual(Data *data) {
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
-	fgets (espetaculo->nome, 200, stdin);
+	scanf("%s", espetaculo->nome);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
@@ -306,16 +307,73 @@ int main () {
 	Espetaculo espetaculo;
 	Lista_est Teatro;
 
-	ler_Arquivo(espetaculo, &Teatro);
-	//Ler_Espetaculo(&espetaculo);
-    Exibir_Espetaculo(espetaculo);
+	Criar_Lista_Vazia(&Teatro);
 
+    ler_Arquivo(espetaculo, &Teatro);
+    //Antes de tudo ele acrescenta na Lista os Espetaculos
 
+    int index = -1, escolha, erros = 0, opcao;
 
+		while (index != 0 && erros < LIMITE){
+		//Fornece as opcoes do TAD.
+		printf("=============MENU Apolo Manager=============\n\n");
+		printf("Escolha alguma das opcoes abaixo:\n\n");
+		printf("0 - Sair do Sistema.\n");
+		printf("1 - Inserir Novo Espetaculo\n");
+		printf("2 - Exibir Espetaculo\n");
+		printf("=============================================\n");
 
-	Exibir_Espetaculo(espetaculo);
+		scanf("%d", &index);
 
-	gravar_Arquivo(&espetaculo, &Teatro);
+    switch (index) {
+
+		case 0:
+		    gravar_Arquivo(&espetaculo, &Teatro);
+		    printf("Obrigado por usar nosso programa.");
+			return 0;
+
+		case 1:
+		    Ler_Espetaculo(&espetaculo);
+            Insere_Elemento_Lista(&Teatro, espetaculo);
+            break;
+
+		case 2:
+		    Exibir_Espetaculo(espetaculo);
+			break;
+
+		case 3:
+			break;
+		case 4:
+		    break;
+
+		case 5:
+		    break;
+
+		case 6:
+		    break;
+
+		case 7:
+            break;
+
+		case 8:
+
+            break;
+
+        case 9:
+        	break;
+
+        case 10:
+        	break;
+
+		default:
+            erros++;
+            break;
+		}
+
+		getchar();
+
+		cls();
+	}
 
 	return 0;
 }
