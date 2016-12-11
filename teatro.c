@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
-#define MAX 100
+#define MAX 30
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
@@ -12,7 +12,7 @@ typedef struct tm *Data;
 FILE *arq;
 
 typedef struct {
-	char nome[200];
+	char nome[50];
 	int CPF;
 }Pessoa;
 
@@ -25,9 +25,9 @@ typedef struct {
 typedef Assento Sessao[18][20];
 
 typedef struct {
-	char nome[200];
+	char nome[50];
 	Sessao sessao;
-	Data data;
+	time_t data;
 	float ingresso;
 }Espetaculo;
 
@@ -229,15 +229,16 @@ void Inicializar_Sessao(Sessao sessao) {
 	}
 }
 
-void Tempo_Atual(Data *data) {
+void Tempo_Atual(time_t *data) {
 	time_t tempo_atual;
 	time(&tempo_atual);
-	*data = localtime(&tempo_atual);
+	Data temp = localtime(&tempo_atual);
+	*data = mktime(temp);
 }
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
-	fgets (espetaculo->nome, 200, stdin);
+	fgets (espetaculo->nome, 50, stdin);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
@@ -247,7 +248,7 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 
 void Exibir_Espetaculo(Espetaculo espetaculo) {
 	printf("\nNome do espetaculo: %s", espetaculo.nome);
-	printf("\nData do espetaculo: %s", asctime(espetaculo.data));
+	printf("\nData do espetaculo: %s", ctime(&espetaculo.data));
 	printf("\nPreco do ingresso: %.2f", espetaculo.ingresso);
 	printf("\nLotacao da sessao:\n");
 	Exibir_Sessao(espetaculo.sessao);
@@ -255,35 +256,26 @@ void Exibir_Espetaculo(Espetaculo espetaculo) {
 
 void Ler_Pessoa(Pessoa *pessoa) {
 	printf("\nDigite seu nome: ");
-	fgets (pessoa->nome, 200, stdin);
+	fgets (pessoa->nome, 50, stdin);
 	printf("\nDigite seu CPF: ");
 	scanf("%d", &pessoa->CPF);
 }
 
-void gravar_Arquivo(Espetaculo *espetaculo, Lista_est *Teatro) {
-    arq = fopen("arquivo.dat", "wb");
-    if(arq!=NULL)
-    {
-        int p = Teatro->Prim;
-        int i;
-        for(i = Teatro->Ult; i > p; i--)
-        {
-            fwrite(&(Teatro->Item[i]), sizeof(Espetaculo),1,arq);
-        }
+void Gravar_Arquivo(Lista_est *Teatro) {
+	arq = fopen("arquivo.dat", "wb+");
+    if(arq != NULL) {
+        fwrite(&(Teatro->Item), sizeof(Espetaculo), Teatro->Ult, arq);
         fclose(arq);
     }
 }
 
-void ler_Arquivo (Espetaculo espetaculo, Lista_est *Teatro) {
+void Ler_Arquivo (Espetaculo *espetaculo, Lista_est *Teatro) {
     arq = fopen("arquivo.dat", "rb");
+    Criar_Lista_Vazia(&(*Teatro));
     if (arq!=NULL) {
-        Criar_Lista_Vazia(&(*Teatro));
-        espetaculo.nome[0] = NULL;
-        while (!feof(arq))
-        {
-            if(espetaculo.nome[0]  != NULL)
-            Insere_Elemento_Lista(&(*Teatro), espetaculo);
-            fread(&espetaculo, sizeof(Espetaculo), 1, arq);   //fechamento
+        while (!feof(arq)) {
+            fread(&(*espetaculo), sizeof(Espetaculo), 1, arq);
+            Insere_Elemento_Lista(&(*Teatro), *espetaculo);
         }
         fclose(arq);
     }
@@ -302,12 +294,18 @@ void cls(void){
 int main () {
 	srand((unsigned int)time(NULL));
 
-	Sessao sessao;
 	Espetaculo espetaculo;
 	Lista_est Teatro;
 
-	ler_Arquivo(espetaculo, &Teatro);
-	//Ler_Espetaculo(&espetaculo);
+	Ler_Arquivo(&espetaculo, &Teatro);
+	Exibir_Espetaculo(Teatro.Item[0]);
+	Exibir_Espetaculo(Teatro.Item[1]);
+	Exibir_Espetaculo(Teatro.Item[2]);
+	Exibir_Espetaculo(Teatro.Item[3]);
+	Exibir_Espetaculo(Teatro.Item[4]);
+	Exibir_Espetaculo(Teatro.Item[5]);
+	Ler_Espetaculo(&espetaculo);
+	Insere_Elemento_Lista(&Teatro, espetaculo);
     Exibir_Espetaculo(espetaculo);
 
 
@@ -315,7 +313,7 @@ int main () {
 
 	Exibir_Espetaculo(espetaculo);
 
-	gravar_Arquivo(&espetaculo, &Teatro);
+	Gravar_Arquivo(&Teatro);
 
 	return 0;
 }
