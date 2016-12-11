@@ -254,6 +254,19 @@ void Exibir_Espetaculo(Espetaculo espetaculo) {
 	Exibir_Sessao(espetaculo.sessao);
 }
 
+void Exibir_Todos_Espetaculos(Lista_est Teatro) {
+    int P = Teatro.Prim;
+    if(Verifica_Lista_Vazia(Teatro)) {
+        printf("Nao ha espetaculos cadastrados.");
+    }
+    else {
+        while(P < Teatro.Ult) {
+        Exibir_Espetaculo(Teatro.Item[P]);
+        P++;
+        }
+    }
+}
+
 void Ler_Pessoa(Pessoa *pessoa) {
 	printf("\nDigite seu nome: ");
 	fgets (pessoa->nome, 200, stdin);
@@ -286,6 +299,7 @@ void ler_Arquivo (Espetaculo espetaculo, Lista_est *Teatro) {
             Insere_Elemento_Lista(&(*Teatro), espetaculo);
             fread(&espetaculo, sizeof(Espetaculo), 1, arq);   //fechamento
         }
+
         fclose(arq);
     }
 }
@@ -309,7 +323,7 @@ int main () {
 
 	Criar_Lista_Vazia(&Teatro);
 
-    ler_Arquivo(espetaculo, &Teatro);
+    //ler_Arquivo(espetaculo, &Teatro);
     //Antes de tudo ele acrescenta na Lista os Espetaculos
 
     int index = -1, escolha, erros = 0, opcao;
@@ -320,7 +334,7 @@ int main () {
 		printf("Escolha alguma das opcoes abaixo:\n\n");
 		printf("0 - Sair do Sistema.\n");
 		printf("1 - Inserir Novo Espetaculo\n");
-		printf("2 - Exibir Espetaculo\n");
+		printf("2 - Exibir Todos os Espetaculo\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -328,7 +342,7 @@ int main () {
     switch (index) {
 
 		case 0:
-		    gravar_Arquivo(&espetaculo, &Teatro);
+		    //gravar_Arquivo(&espetaculo, &Teatro);
 		    printf("Obrigado por usar nosso programa.");
 			return 0;
 
@@ -338,7 +352,7 @@ int main () {
             break;
 
 		case 2:
-		    Exibir_Espetaculo(espetaculo);
+		    Exibir_Todos_Espetaculos(Teatro);
 			break;
 
 		case 3:
