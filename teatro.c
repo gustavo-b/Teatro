@@ -31,7 +31,6 @@ typedef struct {
 	Sessao sessao;
 	time_t data;
 	float ingresso;
-	int lotacao;
 }Espetaculo;
 
 typedef struct {
@@ -150,6 +149,15 @@ void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
     }
 }
 
+void Exibir_Pessoa(Pessoa pessoa) {
+
+    printf("--------------------------------");
+    printf("Nome: %s", pessoa.nome);
+    printf("CPF: %d", pessoa.CPF);
+    printf("--------------------------------");
+
+}
+
 int Get_Random_Int(int min, int max) {
     int r;
     const unsigned int range = 1 + max - min;
@@ -213,21 +221,19 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 }
 
-void Vender_Ingresso(Espetaculo espetaculo, int l, int c, Sessao sessao) {
+void Vender_Ingresso(int l, int c, Sessao sessao) {
 	if(sessao[l][c].status[0] == VAGO) {
 		sessao[l][c].status[0] = VENDIDO;
 		printf("Poltrona Ocupada com Sucesso");
-		espetaculo.lotacao--;
 	} else {
 		printf("Poltrona nao Disponivel");
 	}
 }
 
-void Reservar_Ingresso(Espetaculo espetaculo, int l, int c, Sessao sessao) {
+void Reservar_Ingresso(int l, int c, Sessao sessao) {
 	if(sessao[l][c].status[0] == VAGO) {
         sessao[l][c].status[0] = RESERVADO;
 		printf("Poltrona Ocupada com Sucesso");
-		espetaculo.lotacao--;
 	} else {
 		printf("Poltrona nao Disponivel");
 	}
@@ -240,6 +246,18 @@ void Inicializar_Sessao(Sessao sessao) {
 			sessao[i][j].status[0] = VAGO;
 		}
 	}
+}
+
+int Verificar_Sessao_Cheia(Sessao sessao) {
+	int i, j;
+	for (i = 0; i < 18; i++) {
+		for (j = 0; j < 20; j++) {
+			if(sessao[i][j].status[0] == VAGO) {
+                return 1;
+			}
+		}
+	}
+	return 0;
 }
 
 void Tempo_Atual(time_t *data) {
@@ -262,7 +280,6 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
 	Tempo_Atual(&espetaculo->data); //Temporário
-	espetaculo->lotacao = MAX_SESSAO;
 }
 
 void Exibir_Espetaculo(Espetaculo espetaculo) {
@@ -355,6 +372,8 @@ int main () {
 
 	Espetaculo espetaculo;
 	Lista_est Teatro;
+	Fila_est espera;
+	Pessoa pessoa;
 	Ler_Arquivo(&espetaculo, &Teatro);
 
 	int index = -1, escolha, erros = 0, opcao;
@@ -369,6 +388,7 @@ int main () {
 		printf("3 - Buscar Espetaculo\n");
 		printf("4 - Comprar Ingresso\n");
 		printf("5 - Reservar Poltrona\n");
+		printf("5 - Exibir Lista de Espera\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -398,24 +418,32 @@ int main () {
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
 				int espe = Consultar_Espetaculo(Teatro, escolha);
-				if(espe >= 0) {
-                    printf("\nEscolha a poltrona Desejada: ");
-                    char poltrona[4];
-                    scanf("%s", poltrona);
-                    if(poltrona[0] > 90) {
-                        poltrona[0] = poltrona[0] - 32;
-                        //Converter minúsculo para maiúsculo
+				if(Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
+                    if(espe >= 0) {
+                        printf("\nEscolha a poltrona Desejada: ");
+                        char poltrona[4];
+                        scanf("%s", poltrona);
+                        if(poltrona[0] > 90) {
+                            poltrona[0] = poltrona[0] - 32;
+                            //Converter minúsculo para maiúsculo
+                        }
+                        int linha = poltrona[0] - 'A';
+                        int i = 1;
+                        int coluna = 0;
+                        while(poltrona[i] != '\0') {
+                            coluna = (coluna * 10) + (poltrona[i] - '0');
+                            i++;
+                        }
+                        Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
+                        Vender_Ingresso(linha, coluna-1, Teatro.Item[espe].sessao);
                     }
-                    int linha = poltrona[0] - 'A';
-                    int i = 1;
-                    int coluna = 0;
-                    while(poltrona[i] != '\0') {
-                        coluna = (coluna * 10) + (poltrona[i] - '0');
-                        i++;
-                    }
-                    Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
-                    Vender_Ingresso(Teatro.Item[espe], linha, coluna-1, Teatro.Item[espe].sessao);
-                    printf("\nHa um total de %d cadeiras livres.", espetaculo.lotacao);
+				}
+				else {
+                    printf("\nSessão Cheia. Adicionando na lista de Espera");
+                    Ler_Pessoa(&espera.Item);
+                    Enfileirar(&espera, pessoa);
+                    printf("Adicionado na Lista de espera:\n")
+                    Exibir_Pessoa(pessoa);
 				}
 			    break;
 
@@ -424,22 +452,31 @@ int main () {
 			    printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                if(espe >= 0) {
-                    printf("\nEscolha a poltrona Desejada: ");
-                    char poltrona[4];
-                    scanf("%s", poltrona);
-                    if(poltrona[0] > 90) {
-                        poltrona[0] = poltrona[0] - 32;
+                if(Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
+                    if(espe >= 0) {
+                        printf("\nEscolha a poltrona Desejada: ");
+                        char poltrona[4];
+                        scanf("%s", poltrona);
+                        if(poltrona[0] > 90) {
+                            poltrona[0] = poltrona[0] - 32;
+                        }
+                        int linha = poltrona[0] - 'A';
+                        int i = 1;
+                        int coluna = 0;
+                        while(poltrona[i] != '\0') {
+                            coluna = (coluna * 10) + (poltrona[i] - '0');
+                            i++;
+                        }
+                        Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
+                        Reservar_Ingresso(linha, coluna-1, Teatro.Item[espe].sessao);
                     }
-                    int linha = poltrona[0] - 'A';
-                    int i = 1;
-                    int coluna = 0;
-                    while(poltrona[i] != '\0') {
-                        coluna = (coluna * 10) + (poltrona[i] - '0');
-                        i++;
-                    }
-                    Ler_Pessoa(&Teatro.Item[espe].sessao[linha][coluna].pessoa);
-                    Reservar_Ingresso(Teatro.Item[espe], linha, coluna-1, Teatro.Item[espe].sessao);
+                }
+                else {
+                    printf("\nSessão Cheia. Adicionando na lista de Espera");
+                    Ler_Pessoa(&espera.Item);
+                    Enfileirar(&espera, pessoa);
+                    printf("Adicionado na Lista de espera:\n")
+                    Exibir_Pessoa(pessoa);
                 }
 
 			    break;
