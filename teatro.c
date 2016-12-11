@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
-#define MAX 30
+#define MAX 20
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
@@ -239,7 +239,8 @@ void Tempo_Atual(time_t *data) {
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
-	fgets (espetaculo->nome, 50, stdin);
+	scanf("%s", espetaculo->nome);
+	//fgets (espetaculo->nome, 50, stdin);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
@@ -328,8 +329,8 @@ int main () {
 	    switch (index) {
 	
 			case 0:
-			    //gravar_Arquivo(&espetaculo, &Teatro);
-			    printf("Obrigado por usar nosso programa.");
+			   	Gravar_Arquivo(&Teatro);
+			    printf("Obrigado por usar nosso programa.\n");
 				return 0;
 	
 			case 1:
@@ -370,11 +371,10 @@ int main () {
 	            break;
 			}
 	
-			getchar();
+		getchar();
+		getchar();
 	
-			cls();
-		}
-
-	Gravar_Arquivo(&Teatro);
+		cls();
+	}
 	return 0;
 }
