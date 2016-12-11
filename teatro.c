@@ -239,12 +239,12 @@ void Tempo_Atual(time_t *data) {
 }
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
+	
 	setbuf(stdin, NULL);
 	printf("\nNome do espetaculo: ");
 	scanf("%[^\n]s", espetaculo->nome);
 	printf("\nDigite o Codigo de Identificacao do Espetaculo: ");
 	scanf("%d", &espetaculo->codigo);
-	//fgets (espetaculo->nome, 50, stdin);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
@@ -272,6 +272,29 @@ void Exibir_Todos_Espetaculos(Lista_est Teatro) {
         P++;
         }
     }
+}
+
+void Consultar_Espetaculo(Lista_est Teatro, int codigo){
+    
+    int i;
+
+    if(Verifica_Lista_Vazia(Teatro)) {
+        printf("A lista está vazia.");
+    }
+    else {
+        i = Teatro.Prim;
+
+        while ((i < Teatro.Ult) && (codigo != Teatro.Item[i].codigo))
+            i++;
+        if(i < Teatro.Ult) {
+
+            Exibir_Espetaculo(Teatro.Item[i]);
+
+        }
+        else printf("Setor nao encontrado.");
+
+    }
+
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
@@ -327,6 +350,7 @@ int main () {
 		printf("0 - Sair do Sistema.\n");
 		printf("1 - Inserir Novo Espetaculo\n");
 		printf("2 - Exibir Todos os Espetaculo\n");
+		printf("3 - Buscar Espetaculo\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -348,6 +372,9 @@ int main () {
 				break;
 	
 			case 3:
+				printf("Digite o codigo do Espetaculo: ");
+				scanf("%d", &escolha);
+				Consultar_Espetaculo(Teatro, escolha);
 				break;
 			case 4:
 			    break;
