@@ -239,7 +239,7 @@ void Tempo_Atual(time_t *data) {
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
-	scanf("%s", espetaculo->nome);
+	scanf("%[^\n]s", espetaculo->nome);
 	//fgets (espetaculo->nome, 50, stdin);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
