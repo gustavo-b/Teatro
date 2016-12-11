@@ -212,13 +212,12 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 }
 
-void Preencher_Sessao(Sessao sessao) {
-	int i, j;
-	for (i = 0; i < 360; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
-	}
-	for (i = 0; i < 60; i++) {
-		sessao[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
+void Preencher_Sessao(Sessao sessao, int l, int c) {
+	if(sessao[l][c].status[0] == VAGO) {
+		sessao[l][c].status[0] = VENDIDO;
+		printf("Poltrona ocupada.");
+	} else {
+		printf("Poltrona Ocupada");
 	}
 }
 
@@ -239,16 +238,17 @@ void Tempo_Atual(time_t *data) {
 }
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
-	
+
 	setbuf(stdin, NULL);
 	printf("\nNome do espetaculo: ");
 	scanf("%[^\n]s", espetaculo->nome);
+	setbuf(stdin, NULL);
 	printf("\nDigite o Codigo de Identificacao do Espetaculo: ");
 	scanf("%d", &espetaculo->codigo);
+	setbuf(stdin, NULL);
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
-	Preencher_Sessao(espetaculo->sessao);
 	Tempo_Atual(&espetaculo->data); //Temporário
 }
 
@@ -274,8 +274,8 @@ void Exibir_Todos_Espetaculos(Lista_est Teatro) {
     }
 }
 
-void Consultar_Espetaculo(Lista_est Teatro, int codigo){
-    
+int Consultar_Espetaculo(Lista_est Teatro, int codigo){
+
     int i;
 
     if(Verifica_Lista_Vazia(Teatro)) {
@@ -287,12 +287,11 @@ void Consultar_Espetaculo(Lista_est Teatro, int codigo){
         while ((i < Teatro.Ult) && (codigo != Teatro.Item[i].codigo))
             i++;
         if(i < Teatro.Ult) {
-
             Exibir_Espetaculo(Teatro.Item[i]);
-
+            return i;
         }
         else printf("Setor nao encontrado.");
-
+        return -1;
     }
 
 }
@@ -351,61 +350,76 @@ int main () {
 		printf("1 - Inserir Novo Espetaculo\n");
 		printf("2 - Exibir Todos os Espetaculo\n");
 		printf("3 - Buscar Espetaculo\n");
+		printf("4 - Comprar Ingresso\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
 
 	    switch (index) {
-	
+
 			case 0:
 			   	Gravar_Arquivo(&Teatro);
 			    printf("Obrigado por usar nosso programa.\n");
 				return 0;
-	
+
 			case 1:
 			    Ler_Espetaculo(&espetaculo);
 	            Insere_Elemento_Lista(&Teatro, espetaculo);
 	            break;
-	
+
 			case 2:
 			    Exibir_Todos_Espetaculos(Teatro);
 				break;
-	
+
 			case 3:
 				printf("Digite o codigo do Espetaculo: ");
 				scanf("%d", &escolha);
 				Consultar_Espetaculo(Teatro, escolha);
 				break;
 			case 4:
+				printf("Digite o Codigo do Espetaculo: ");
+				scanf("%d", &escolha);
+				int espe = Consultar_Espetaculo(Teatro, escolha);
+				printf("\nEscolha a poltrona Desejada: ");
+				char poltrona[4];
+				scanf("%s", poltrona);
+				int linha = poltrona[0] - 'A';
+				int i = 1;
+				int coluna = 0;
+				while(poltrona[i] != '\0') {
+					coluna = (coluna * 10) + (poltrona[i] - '0');
+					i++;
+				}
+				Preencher_Sessao(Teatro.Item[espe].sessao, linha, coluna);
 			    break;
-	
+
 			case 5:
 			    break;
-	
+
 			case 6:
 			    break;
-	
+
 			case 7:
 	            break;
-	
+
 			case 8:
-	
+
 	            break;
-	
+
 	        case 9:
 	        	break;
-	
+
 	        case 10:
 	        	break;
-	
+
 			default:
 	            erros++;
 	            break;
 			}
-	
+
 		getchar();
 		getchar();
-	
+
 		cls();
 	}
 	return 0;
