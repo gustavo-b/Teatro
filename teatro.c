@@ -6,6 +6,7 @@
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
+#define LIMITE 10
 
 typedef struct tm *Data;
 
@@ -73,7 +74,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 	p = Teatro->Prim;
 	if(Verifica_Lista_Cheia(*Teatro)){
-		printf("Lista lotada, não pode ser adicionado mais dados.\n");
+		printf("Foi atingida a capacidade máxima de espetáculos do teatro!\n");
 	}
 	else {
 		p = Teatro->Prim;
@@ -99,7 +100,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 
 void Enfileirar(Fila_est* Espera, Pessoa pessoa) {
     if(Verifica_Fila_Cheia(*Espera)) {
-        printf("Nao podem ser inseridos mais pessoas, fila cheia.\n");
+        printf("Nao podem ser inseridos mais pessoas, fila de espera cheia.\n");
     }
     else {
         Espera->Item[Espera->Fim] = pessoa;
@@ -136,7 +137,7 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 
 void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
     if (Verifica_Fila_Vazia(*Espera)) {
-        printf("Nao hÃ¡ setores na fila.");
+        printf("Nao ha setores na fila.");
     }
     else {
         *pessoa = Espera->Item[Espera->Inicio];
@@ -238,7 +239,11 @@ void Tempo_Atual(time_t *data) {
 
 void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nNome do espetaculo: ");
+<<<<<<< HEAD
 	fgets (espetaculo->nome, 50, stdin);
+=======
+	scanf("%s", espetaculo->nome);
+>>>>>>> 7b86a7f45aa4157330e51c0ef257964baaed6627
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
@@ -252,6 +257,19 @@ void Exibir_Espetaculo(Espetaculo espetaculo) {
 	printf("\nPreco do ingresso: %.2f", espetaculo.ingresso);
 	printf("\nLotacao da sessao:\n");
 	Exibir_Sessao(espetaculo.sessao);
+}
+
+void Exibir_Todos_Espetaculos(Lista_est Teatro) {
+    int P = Teatro.Prim;
+    if(Verifica_Lista_Vazia(Teatro)) {
+        printf("Nao ha espetaculos cadastrados.");
+    }
+    else {
+        while(P < Teatro.Ult) {
+        Exibir_Espetaculo(Teatro.Item[P]);
+        P++;
+        }
+    }
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
@@ -296,24 +314,71 @@ int main () {
 
 	Espetaculo espetaculo;
 	Lista_est Teatro;
-
 	Ler_Arquivo(&espetaculo, &Teatro);
-	Exibir_Espetaculo(Teatro.Item[0]);
-	Exibir_Espetaculo(Teatro.Item[1]);
-	Exibir_Espetaculo(Teatro.Item[2]);
-	Exibir_Espetaculo(Teatro.Item[3]);
-	Exibir_Espetaculo(Teatro.Item[4]);
-	Exibir_Espetaculo(Teatro.Item[5]);
-	Ler_Espetaculo(&espetaculo);
-	Insere_Elemento_Lista(&Teatro, espetaculo);
-    Exibir_Espetaculo(espetaculo);
 
+	int index = -1, escolha, erros = 0, opcao;
 
+	while (index != 0 && erros < LIMITE) {
+		//Fornece as opcoes do TAD.
+		printf("=============MENU MACHADO DE ASSIS=============\n\n");
+		printf("Escolha alguma das opcoes abaixo:\n\n");
+		printf("0 - Sair do Sistema.\n");
+		printf("1 - Inserir Novo Espetaculo\n");
+		printf("2 - Exibir Todos os Espetaculo\n");
+		printf("===============================================\n");
 
+		scanf("%d", &index);
 
-	Exibir_Espetaculo(espetaculo);
+	    switch (index) {
+	
+			case 0:
+			    //gravar_Arquivo(&espetaculo, &Teatro);
+			    printf("Obrigado por usar nosso programa.");
+				return 0;
+	
+			case 1:
+			    Ler_Espetaculo(&espetaculo);
+	            Insere_Elemento_Lista(&Teatro, espetaculo);
+	            break;
+	
+			case 2:
+			    Exibir_Todos_Espetaculos(Teatro);
+				break;
+	
+			case 3:
+				break;
+			case 4:
+			    break;
+	
+			case 5:
+			    break;
+	
+			case 6:
+			    break;
+	
+			case 7:
+	            break;
+	
+			case 8:
+	
+	            break;
+	
+	        case 9:
+	        	break;
+	
+	        case 10:
+	        	break;
+	
+			default:
+	            erros++;
+	            break;
+			}
+	
+			getchar();
+	
+			cls();
+		}
 
 	Gravar_Arquivo(&Teatro);
-
 	return 0;
 }
