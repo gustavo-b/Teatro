@@ -224,18 +224,18 @@ void Exibir_Sessao(Sessao sessao) {
 void Vender_Ingresso(int l, int c, Sessao sessao) {
 	if(sessao[l][c].status[0] == VAGO) {
 		sessao[l][c].status[0] = VENDIDO;
-		printf("Poltrona Ocupada com Sucesso");
+		printf("Poltrona Ocupada com Sucesso.");
 	} else {
-		printf("Poltrona nao Disponivel");
+		printf("Poltrona nao Disponivel.");
 	}
 }
 
 void Reservar_Ingresso(int l, int c, Sessao sessao) {
 	if(sessao[l][c].status[0] == VAGO) {
         sessao[l][c].status[0] = RESERVADO;
-		printf("Poltrona Ocupada com Sucesso");
+		printf("Poltrona Ocupada com Sucesso.");
 	} else {
-		printf("Poltrona nao Disponivel");
+		printf("Poltrona nao Disponivel.");
 	}
 }
 
@@ -253,11 +253,11 @@ int Verificar_Sessao_Cheia(Sessao sessao) {
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
 			if(sessao[i][j].status[0] == VAGO) {
-                return 1;
+                return 0;
 			}
 		}
 	}
-	return 0;
+	return 1;
 }
 
 void Tempo_Atual(time_t *data) {
@@ -309,7 +309,7 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
     int i;
 
     if(Verifica_Lista_Vazia(Teatro)) {
-        printf("Nao ha espetaculos cadastrados\n");
+        printf("Nao ha espetaculos cadastrados.\n");
         return 0;
     }
     else {
@@ -322,7 +322,7 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
             printf("%d\n", i);
             return i;
         }
-        else printf("Espetaculo nao cadastrado\n");
+        else printf("Espetaculo nao cadastrado.\n");
         return 0;
     }
 
@@ -384,11 +384,11 @@ int main () {
 		printf("Escolha alguma das opcoes abaixo:\n\n");
 		printf("0 - Sair do Sistema.\n");
 		printf("1 - Inserir Novo Espetaculo\n");
-		printf("2 - Exibir Todos os Espetaculo\n");
+		printf("2 - Exibir Todos os Espetaculos\n");
 		printf("3 - Buscar Espetaculo\n");
 		printf("4 - Comprar Ingresso\n");
 		printf("5 - Reservar Poltrona\n");
-		printf("5 - Exibir Lista de Espera\n");
+		printf("6 - Exibir Lista de Espera\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -414,11 +414,12 @@ int main () {
 				scanf("%d", &escolha);
 				Consultar_Espetaculo(Teatro, escolha);
 				break;
+
 			case 4:
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
 				int espe = Consultar_Espetaculo(Teatro, escolha);
-				if(Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
+				if(!Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
                     if(espe >= 0) {
                         printf("\nEscolha a poltrona Desejada: ");
                         char poltrona[4];
@@ -440,19 +441,18 @@ int main () {
 				}
 				else {
                     printf("\nSessão Cheia. Adicionando na lista de Espera");
-                    Ler_Pessoa(&espera.Item);
+                    Ler_Pessoa(&pessoa);
                     Enfileirar(&espera, pessoa);
-                    printf("Adicionado na Lista de espera:\n")
+                    printf("Adicionado na Lista de espera:\n");
                     Exibir_Pessoa(pessoa);
 				}
 			    break;
 
 			case 5:
-
 			    printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                if(Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
+                if(!Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
                     if(espe >= 0) {
                         printf("\nEscolha a poltrona Desejada: ");
                         char poltrona[4];
@@ -473,9 +473,9 @@ int main () {
                 }
                 else {
                     printf("\nSessão Cheia. Adicionando na lista de Espera");
-                    Ler_Pessoa(&espera.Item);
+                    Ler_Pessoa(&pessoa);
                     Enfileirar(&espera, pessoa);
-                    printf("Adicionado na Lista de espera:\n")
+                    printf("Adicionado na Lista de espera:\n");
                     Exibir_Pessoa(pessoa);
                 }
 
