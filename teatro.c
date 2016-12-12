@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
+#include <string.h>
 #define MAX 20
 #define RESERVADO '#'
 #define VENDIDO 'X'
@@ -15,7 +16,8 @@ FILE *arq;
 
 typedef struct {
 	char nome[50];
-	int CPF;
+	long CPF;
+	long conta_bancaria;
 }Pessoa;
 
 typedef struct {
@@ -29,7 +31,7 @@ typedef struct {
 	char nome[50];
 	int codigo;
 	Sessao sessao;
-	time_t data;
+	long long data;
 	float ingresso;
 }Espetaculo;
 
@@ -228,6 +230,22 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 	}
 }
 
+int Pessoa_Igual(Pessoa a, Pessoa b) {
+	if (a.conta_bancaria == b.conta_bancaria && a.CPF == b.CPF && strcmp(a.nome, b.nome) == 0) {
+		return 1;
+	}
+	return 0;
+}
+
+void Confirmar_Reserva(int l, int c, Sessao sessao, Pessoa pessoa) {
+	if(sessao[l][c].status[0] == RESERVADO && Pessoa_Igual(sessao[l][c].pessoa, pessoa)) {
+        sessao[l][c].status[0] = VENDIDO;
+		printf("Reserva confirmada com Sucesso.");
+	} else {
+		printf("Falha na confirmacao da reserva.");
+	}
+}
+
 void Inicializar_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
@@ -298,6 +316,7 @@ void Exibir_Espetaculo(Espetaculo espetaculo) {
 	printf("\nData do espetaculo: %s", ctime(&espetaculo.data));
 	printf("\nPreco do ingresso: %.2f", espetaculo.ingresso);
 	printf("\nLotacao da sessao:\n");
+	printf("\n%c - VAGO\n%c - RESERVADO\n%c - VENDIDO\n\n", VAGO, RESERVADO, VENDIDO);
 	Exibir_Sessao(espetaculo.sessao);
 }
 
@@ -345,6 +364,9 @@ void Ler_Pessoa(Pessoa *pessoa) {
 	setbuf(stdin, NULL);
 	printf("\nDigite seu CPF: ");
 	scanf("%d", &pessoa->CPF);
+	setbuf(stdin, NULL);
+	printf("\nDigite o numero do sua conta bancaria: ");
+	scanf("%d", &pessoa->conta_bancaria);
 }
 
 void Gravar_Arquivo(Lista_est *Teatro) {
@@ -509,7 +531,7 @@ int main () {
                     i++;
                 }
                 Ler_Pessoa(&pessoa);
-                //Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao,);
+                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao, pessoa);
 			    break;
 
 			case 7:
