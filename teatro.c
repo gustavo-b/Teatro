@@ -125,7 +125,7 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\b     ");
 		printf("\n");
 		printf("\n");
-		
+
 		printf("\t\t|");
 		for(i = 0; i < 40; i++) {
 			printf("-");
@@ -161,7 +161,7 @@ int Existe_Codigo(Lista_est Teatro, Espetaculo espetaculo) {
 			P++;
         }
     }
-    
+
     return 0;
 }
 
@@ -287,20 +287,55 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 	}
 }
 
-int Pessoa_Igual(Pessoa a, Pessoa b) {
-	if (strcmp(a.conta_bancaria, b.conta_bancaria) && strcmp(a.CPF, b.CPF) && strcmp(a.nome, b.nome)) {
-		return 1;
+int Nome_Igual(Pessoa a, Pessoa b) {
+	if (strcmp(a.nome, b.nome) ==0 ) {
+	    return 1;
+	}
+    return 0;
+}
+
+int CPF_Igual(Pessoa a, Pessoa b) {
+	if (strcmp(a.CPF, b.CPF) == 0) {
+        return 1;
+	}
+    return 0;
+}
+
+int Conta_Igual(Pessoa a, Pessoa b) {
+	if (strcmp(a.conta_bancaria, b.conta_bancaria) == 0) {
+        return 1;
 	}
 	return 0;
 }
 
-void Confirmar_Reserva(int l, int c, Sessao sessao, Pessoa pessoa) {
-	if(sessao[l][c].status[0] == RESERVADO && Pessoa_Igual(sessao[l][c].pessoa, pessoa)) {
-        sessao[l][c].status[0] = VENDIDO;
-		printf("Reserva confirmada com Sucesso.");
-	} else {
-		printf("Falha na confirmacao da reserva.");
-	}
+void Confirmar_Reserva(int l, int c, Sessao sessao) {
+    Pessoa pessoa;
+    int opcao = 1;
+    if(sessao[l][c].status[0] == RESERVADO) {
+        while (opcao != 0) {
+            Ler_Pessoa(&pessoa);
+            if (Nome_Igual(sessao[l][c].pessoa,pessoa) != 0) {
+                printf("O nome não está correto\nTentar novamente?\n1 = sim.\n0 = não.\n");
+                scanf("%d",&opcao);
+            }
+            else if (CPF_Igual(sessao[l][c].pessoa,pessoa) != 0 && opcao == 1) {
+                printf("O CPF não está correto\nTentar novamente?\n1 = sim.\n0 = não.\n");
+                scanf("%d",&opcao);
+            }
+            else if (Conta_Igual(sessao[l][c].pessoa,pessoa) != 0 && opcao == 1) {
+                printf("A conta não está correta\nTentar novamente?\n1 = sim.\n0 = não.\n");
+                scanf("%d",&opcao);
+            }
+        }
+        if (opcao = 0) {
+            printf("Confirmação da conta cancelada.");
+        }
+        else if (opcao = 1){
+            sessao[l][c].status[0] = VENDIDO;
+            printf("Reserva confirmada com Sucesso.");
+            opcao = 0;
+        }
+    }
 }
 
 void Inicializar_Sessao(Sessao sessao) {
@@ -433,7 +468,7 @@ void Ler_Arquivo (Espetaculo *espetaculo, Lista_est *Teatro) {
 }
 
 void Tirar_Lista_Espera(Fila_est *espera, Sessao sessao) {
-    int i, j;    
+    int i, j;
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
 			if(sessao[i][j].status[0] == RESERVADO && !Verifica_Fila_Vazia(*espera)) {
@@ -462,14 +497,14 @@ int Get_Random_Int(int min, int max){
      const unsigned int range = 1 + max - min;
      const unsigned int buckets = RAND_MAX / range;
      const unsigned int limit = buckets * range;
- 
+
      do{
          r = rand();
      } while (r >= limit);
- 
+
      return min + (r / buckets);
  }
- 
+
 void Preencher(Sessao reservados) {
 	int i;
 	for (i = 0; i < 2048; i++) {
@@ -623,8 +658,7 @@ int main () {
                     coluna = (coluna * 10) + (poltrona[i] - '0');
                     i++;
                 }
-                Ler_Pessoa(&pessoa);
-                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao, pessoa);
+                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao);
 			    break;
 
 			case 7:
