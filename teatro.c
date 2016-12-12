@@ -16,8 +16,8 @@ FILE *arq;
 
 typedef struct {
 	char nome[50];
-	long CPF;
-	long conta_bancaria;
+	char CPF[12];
+	char conta_bancaria[9];
 }Pessoa;
 
 typedef struct {
@@ -36,7 +36,7 @@ typedef struct {
 	char nome[50];
 	int codigo;
 	Sessao sessao;
-	long long data;
+	time_t data;
 	float ingresso;
 	Fila_est fila_espera;
 }Espetaculo;
@@ -73,7 +73,7 @@ int Verifica_Fila_Cheia(Fila_est Espera) {
     return((Espera.Fim + 1) % MAX_PESSOAS == Espera.Fim );
 }
 
-void Tempo_Atual(long long *data) {
+void Tempo_Atual(time_t *data) {
 	time_t tempo_atual;
 	time(&tempo_atual);
 	Data temp = localtime(&tempo_atual);
@@ -96,7 +96,7 @@ void Exibir_Sessao(Sessao sessao) {
 			}
 		}
 		printf("\b|-----| ");
-		for (j; j < 20; j++) {
+		for (j = 10; j < 20; j++) {
 			if (sessao[i][j].status[0] == RESERVADO) {
 				printf("%c  ", RESERVADO);
 			} else {
@@ -119,15 +119,26 @@ void Exibir_Sessao(Sessao sessao) {
 			}
 		}
 		printf("\b        ");
-		for (j; j < 20; j++) {
-			if (j < 9) {
-				printf("%d  ", j + 1);
-			} else {
-				printf("%d ", j + 1);
-			}
+		for (j = 10; j < 20; j++) {
+			printf("%d ", j + 1);
 		}
 		printf("\b     ");
 		printf("\n");
+		printf("\n");
+		
+		printf("\t\t|");
+		for(i = 0; i < 40; i++) {
+			printf("-");
+		}
+		printf("|\n");
+		printf("\t\t| \t \t \t \t \t |\n");
+		printf("\t\t| \t \t PALCO \t \t \t |\n");
+		printf("\t\t| \t \t \t \t \t |\n");
+		printf("\t\t|");
+		for(i = 0; i < 40; i++) {
+			printf("-");
+		}
+		printf("|\n");
 }
 
 void Exibir_Espetaculo(Espetaculo espetaculo) {
@@ -140,6 +151,20 @@ void Exibir_Espetaculo(Espetaculo espetaculo) {
 	Exibir_Sessao(espetaculo.sessao);
 }
 
+int Existe_Codigo(Lista_est Teatro, Espetaculo espetaculo) {
+	int P;
+	if(!Verifica_Lista_Vazia(Teatro)) {
+        while(P < Teatro.Ult) {
+			if (Teatro.Item[P].codigo == espetaculo.codigo) {
+				return 1;
+			}
+			P++;
+        }
+    }
+    
+    return 0;
+}
+
 void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 	int p;
 
@@ -148,28 +173,32 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 		printf("Foi atingida a capacidade máxima de espetáculos do teatro!\n");
 	}
 	else {
-		long long hoje;
-		Tempo_Atual(&hoje);
-		if (hoje > espetaculo.data) {
-			printf("\nEspetaculo expirado.\n");
-			Exibir_Espetaculo(espetaculo);
+		if (Existe_Codigo(*Teatro, espetaculo)) {
+			printf("Espetaculo com mesmo codigo ja cadastrado.");
 		} else {
-			p = Teatro->Prim;
-			while ((p < Teatro->Ult) && (espetaculo.data > Teatro->Item[p].data)) {
-				p++;
-			}
-			if (p == Teatro->Ult) {
-				Teatro->Item[p] = espetaculo;
-				Teatro->Ult++;
-			}
-			else {
-				if ((espetaculo.data != Teatro->Item[p].data)) {
-					int i;
-					for (i = Teatro->Ult; i > p; i--) {
-						Teatro->Item[i] = Teatro->Item[i - 1];
-					}
+			time_t hoje;
+			Tempo_Atual(&hoje);
+			if (difftime(espetaculo.data, hoje) <= 0) {
+				printf("\nEspetaculo expirado.\n");
+				printf("\n%s\n", espetaculo.nome);
+			} else {
+				p = Teatro->Prim;
+				while ((p < Teatro->Ult) && (espetaculo.data > Teatro->Item[p].data)) {
+					p++;
+				}
+				if (p == Teatro->Ult) {
 					Teatro->Item[p] = espetaculo;
 					Teatro->Ult++;
+				}
+				else {
+					if ((espetaculo.data != Teatro->Item[p].data)) {
+						int i;
+						for (i = Teatro->Ult; i > p; i--) {
+							Teatro->Item[i] = Teatro->Item[i - 1];
+						}
+						Teatro->Item[p] = espetaculo;
+						Teatro->Ult++;
+					}
 				}
 			}
 		}
@@ -213,26 +242,25 @@ void Remove_Elemento_Lista(Lista_est *Teatro, Espetaculo *espetaculo) {
 	}
 }
 
+void Exibir_Pessoa(Pessoa pessoa) {
+
+    printf("\n--------------------------------\n");
+    printf("Nome: %s\n", pessoa.nome);
+    printf("--------------------------------\n");
+
+}
+
 void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
     if (Verifica_Fila_Vazia(*Espera)) {
-        printf("Nao ha setores na fila.");
+        printf("Nao ha pessoas na fila.");
     }
     else {
         *pessoa = Espera->Item[Espera->Inicio];
-        printf("Pessoa removida:\n");
-		//Exibir_Pessoa(*pessoa);
+        printf("Esta pessoa foi transferida da lista de espera para uma cadeira não confirmada da sessão:\n");
+		Exibir_Pessoa(*pessoa);
         Espera->Inicio = (Espera->Inicio + 1) % MAX_PESSOAS;
         Espera->Total--;
     }
-}
-
-void Exibir_Pessoa(Pessoa pessoa) {
-
-    printf("--------------------------------");
-    printf("Nome: %s", pessoa.nome);
-    printf("CPF: %d", pessoa.CPF);
-    printf("--------------------------------");
-
 }
 
 void Exibir_Fila_Espera(Fila_est Espera) {
@@ -260,7 +288,7 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 }
 
 int Pessoa_Igual(Pessoa a, Pessoa b) {
-	if (a.conta_bancaria == b.conta_bancaria && a.CPF == b.CPF && strcmp(a.nome, b.nome)) {
+	if (strcmp(a.conta_bancaria, b.conta_bancaria) && strcmp(a.CPF, b.CPF) && strcmp(a.nome, b.nome) == 0) {
 		return 1;
 	}
 	return 0;
@@ -296,7 +324,7 @@ int Verificar_Sessao_Cheia(Sessao sessao) {
 	return 1;
 }
 
-void Ler_Data(long long *data) {
+void Ler_Data(time_t *data) {
 	char dia[11], hora[6];
 	setbuf(stdin, NULL);
 	printf("\nData do espetaculo (dd/mm/aaaa): ");
@@ -307,6 +335,7 @@ void Ler_Data(long long *data) {
 	setbuf(stdin, NULL);
 
 	Data evento;
+	evento = localtime(&(*data));
 	evento->tm_sec = 0;
 	evento->tm_min = ((hora[3] - '0') * 10) + (hora[4] - '0');
 	evento->tm_hour = ((hora[0] - '0') * 10) + (hora[1] - '0');
@@ -331,6 +360,7 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 	Inicializar_Sessao(espetaculo->sessao);
 	Tempo_Atual(&espetaculo->data);
 	Ler_Data(&espetaculo->data);
+	Criar_Fila_Vazia(&espetaculo->fila_espera);
 }
 
 void Exibir_Todos_Espetaculos(Lista_est Teatro) {
@@ -376,10 +406,10 @@ void Ler_Pessoa(Pessoa *pessoa) {
 	scanf("%[^\n]s", pessoa->nome);
 	setbuf(stdin, NULL);
 	printf("\nDigite seu CPF: ");
-	scanf("%d", &pessoa->CPF);
+	scanf("%*[^0123456789]%s", pessoa->CPF);
 	setbuf(stdin, NULL);
 	printf("\nDigite o numero do sua conta bancaria: ");
-	scanf("%d", &pessoa->conta_bancaria);
+	scanf("%*[^0123456789]%s", pessoa->conta_bancaria);
 }
 
 void Gravar_Arquivo(Lista_est *Teatro) {
@@ -402,16 +432,51 @@ void Ler_Arquivo (Espetaculo *espetaculo, Lista_est *Teatro) {
     }
 }
 
-void Tirar_ListaEspera (Fila_est espera, Sessao sessao) {
-    int i, j;
+void Tirar_Lista_Espera(Fila_est *espera, Sessao sessao) {
+    int i, j;    
 	for (i = 0; i < 18; i++) {
 		for (j = 0; j < 20; j++) {
-			if(sessao[i][j].status[0] == RESERVADO) {
-                sessao[i][j].status[0] = VENDIDO;
-                sessao[i][j].pessoa = espera.Item[espera.Inicio];
-                Desenfileirar(&espera, &sessao[i][j].pessoa);
+			if(sessao[i][j].status[0] == RESERVADO && !Verifica_Fila_Vazia(*espera)) {
+				sessao[i][j].status[0] = VENDIDO;
+				sessao[i][j].pessoa = espera->Item[espera->Inicio];
+				Desenfileirar(&(*espera), &sessao[i][j].pessoa);
 			}
 		}
+	}
+}
+
+void Verificar_Sessao_Iniciando(Lista_est *Teatro) {
+	time_t hoje;
+	Tempo_Atual(&hoje);
+	int P = Teatro->Prim;
+    while(P < Teatro->Ult) {
+		if (difftime(Teatro->Item[P].data, hoje) <= 3600) {
+			Tirar_Lista_Espera(&Teatro->Item[P].fila_espera, Teatro->Item[P].sessao);
+		}
+		P++;
+	}
+}
+
+int Get_Random_Int(int min, int max){
+     int r;
+     const unsigned int range = 1 + max - min;
+     const unsigned int buckets = RAND_MAX / range;
+     const unsigned int limit = buckets * range;
+ 
+     do{
+         r = rand();
+     } while (r >= limit);
+ 
+     return min + (r / buckets);
+ }
+ 
+void Preencher(Sessao reservados) {
+	int i;
+	for (i = 0; i < 2048; i++) {
+		reservados[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = VENDIDO;
+	}
+	for (i = 0; i < 160; i++) {
+		reservados[Get_Random_Int(0, 17)][Get_Random_Int(0, 19)].status[0] = RESERVADO;
 	}
 }
 
@@ -430,13 +495,13 @@ int main () {
 
 	Espetaculo espetaculo;
 	Lista_est Teatro;
-	Fila_est espera;
 	Pessoa pessoa;
 	Ler_Arquivo(&espetaculo, &Teatro);
 
-	int index = -1, escolha, erros = 0, opcao;
+	int index = -1, escolha, erros = 0;
 
 	while (index != 0 && erros < LIMITE) {
+		Verificar_Sessao_Iniciando(&Teatro);
 		//Fornece as opcoes do TAD.
 		printf("=============MENU MACHADO DE ASSIS=============\n\n");
 		printf("Escolha alguma das opcoes abaixo:\n\n");
@@ -447,7 +512,8 @@ int main () {
 		printf("4 - Comprar Ingresso\n");
 		printf("5 - Reservar Poltrona\n");
 		printf("6 - Confirmar Reserva\n");
-		printf("7 - Exibir primeiro da lista de espera\n");
+		printf("7 - Exibir primeiro da fila de espera\n");
+		printf("8 - DEBUG: Preencher sessao\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -568,14 +634,11 @@ int main () {
 	            break;
 
 			case 8:
-
+				printf("\nDigite o Codigo do Espetaculo: ");
+				scanf("%d", &escolha);
+                espe = Consultar_Espetaculo(Teatro, escolha);
+                Preencher(Teatro.Item[espe].sessao);
 	            break;
-
-	        case 9:
-	        	break;
-
-	        case 10:
-	        	break;
 
 			default:
 	            erros++;
