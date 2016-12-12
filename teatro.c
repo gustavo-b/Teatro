@@ -4,11 +4,11 @@
 #include <locale.h>
 #include <string.h>
 #define MAX 20
+#define MAX_PESSOAS 50
 #define RESERVADO '#'
 #define VENDIDO 'X'
 #define VAGO 'O'
 #define LIMITE 10
-#define MAX_SESSAO 360
 
 typedef struct tm *Data;
 
@@ -28,22 +28,23 @@ typedef struct {
 typedef Assento Sessao[18][20];
 
 typedef struct {
+    Pessoa Item[MAX_PESSOAS];
+    int Inicio, Fim, Total;
+}Fila_est;
+
+typedef struct {
 	char nome[50];
 	int codigo;
 	Sessao sessao;
 	long long data;
 	float ingresso;
+	Fila_est fila_espera;
 }Espetaculo;
 
 typedef struct {
     Espetaculo Item[MAX];
     int Prim, Ult;
 }Lista_est;
-
-typedef struct {
-    Pessoa Item[MAX];
-    int Inicio, Fim, Total;
-} Fila_est;
 
 void Criar_Lista_Vazia(Lista_est *Teatro) {
     Teatro->Prim = 0;
@@ -69,7 +70,7 @@ int Verifica_Lista_Cheia(Lista_est Teatro) {
 }
 
 int Verifica_Fila_Cheia(Fila_est Espera) {
-    return((Espera.Fim + 1) % MAX == Espera.Fim );
+    return((Espera.Fim + 1) % MAX_PESSOAS == Espera.Fim );
 }
 
 void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
@@ -107,7 +108,7 @@ void Enfileirar(Fila_est* Espera, Pessoa pessoa) {
     }
     else {
         Espera->Item[Espera->Fim] = pessoa;
-        Espera->Fim = (Espera->Fim + 1) % MAX;
+        Espera->Fim = (Espera->Fim + 1) % MAX_PESSOAS;
         Espera->Total++;
     }
 }
@@ -146,7 +147,7 @@ void Desenfileirar(Fila_est *Espera, Pessoa *pessoa) {
         *pessoa = Espera->Item[Espera->Inicio];
         printf("Pessoa removida:\n");
 		//Exibir_Pessoa(*pessoa);
-        Espera->Inicio = (Espera->Inicio + 1) % MAX;
+        Espera->Inicio = (Espera->Inicio + 1) % MAX_PESSOAS;
         Espera->Total--;
     }
 }
@@ -158,6 +159,10 @@ void Exibir_Pessoa(Pessoa pessoa) {
     printf("CPF: %d", pessoa.CPF);
     printf("--------------------------------");
 
+}
+
+void Exibir_Fila_Espera(Fila_est Espera) {
+	Exibir_Pessoa(Espera.Item[Espera.Inicio]);
 }
 
 void Exibir_Sessao(Sessao sessao) {
@@ -421,7 +426,7 @@ int main () {
 		printf("4 - Comprar Ingresso\n");
 		printf("5 - Reservar Poltrona\n");
 		printf("6 - Confirmar Reserva\n");
-		printf("7 - Exibir Lista de Espera\n");
+		printf("7 - Exibir primeiro da lista de espera\n");
 		printf("===============================================\n");
 
 		scanf("%d", &index);
@@ -475,7 +480,7 @@ int main () {
 				else {
                     printf("\nSessão Cheia. Adicionando na lista de Espera");
                     Ler_Pessoa(&pessoa);
-                    Enfileirar(&espera, pessoa);
+                    Enfileirar(&Teatro.Item[espe].fila_espera, pessoa);
                     printf("Adicionado na Lista de espera:\n");
                     Exibir_Pessoa(pessoa);
 				}
@@ -507,7 +512,7 @@ int main () {
                 else {
                     printf("\nSessão Cheia. Adicionando na lista de Espera");
                     Ler_Pessoa(&pessoa);
-                    Enfileirar(&espera, pessoa);
+                    Enfileirar(&Teatro.Item[espe].fila_espera, pessoa);
                     printf("Adicionado na Lista de espera:\n");
                     Exibir_Pessoa(pessoa);
                 }
@@ -535,6 +540,10 @@ int main () {
 			    break;
 
 			case 7:
+				printf("Digite o Codigo do Espetaculo: ");
+				scanf("%d", &escolha);
+                espe = Consultar_Espetaculo(Teatro, escolha);
+                Exibir_Fila_Espera(Teatro.Item[espe].fila_espera);
 	            break;
 
 			case 8:
