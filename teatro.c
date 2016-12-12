@@ -657,7 +657,6 @@ int main () {
 	                    coluna = (coluna * 10) + (poltrona[i] - '0');
 	                    i++;
 	                }
-	                Ler_Pessoa(&pessoa);
 	                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao);
                 }
 			    break;
