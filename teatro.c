@@ -3,7 +3,7 @@
 #include <time.h>
 #include <locale.h>
 #include <string.h>
-#define MAX 20
+#define MAX 10
 #define MAX_PESSOAS 50
 #define RESERVADO '#'
 #define VENDIDO 'X'
@@ -126,15 +126,15 @@ void Exibir_Sessao(Sessao sessao) {
 		printf("\n");
 		printf("\n");
 
-		printf("\t\t|");
+		printf("\t\t\t|");
 		for(i = 0; i < 40; i++) {
 			printf("-");
 		}
 		printf("|\n");
-		printf("\t\t| \t \t \t \t \t |\n");
-		printf("\t\t| \t \t PALCO \t \t \t |\n");
-		printf("\t\t| \t \t \t \t \t |\n");
-		printf("\t\t|");
+		printf("\t\t\t| \t \t \t \t \t |\n");
+		printf("\t\t\t| \t \t PALCO \t \t \t |\n");
+		printf("\t\t\t| \t \t \t \t \t |\n");
+		printf("\t\t\t|");
 		for(i = 0; i < 40; i++) {
 			printf("-");
 		}
@@ -290,7 +290,6 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 int Nome_Igual(Pessoa a, Pessoa b) {
 	if (strcmp(a.nome, b.nome) ==0 ) {
 	    return 1;
-	}
     return 0;
 }
 
@@ -417,7 +416,7 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
 
     if(Verifica_Lista_Vazia(Teatro)) {
         printf("Nao ha espetaculos cadastrados.\n");
-        return 0;
+        return -1;
     }
     else {
         i = Teatro.Prim;
@@ -430,21 +429,23 @@ int Consultar_Espetaculo(Lista_est Teatro, int codigo){
             return i;
         }
         else printf("Espetaculo nao cadastrado.\n");
-        return 0;
+        return -1;
     }
 
 }
 
 void Ler_Pessoa(Pessoa *pessoa) {
-    setbuf(stdin, NULL);
-	printf("\nDigite seu nome: ");
+    printf("\nDigite seu nome: ");
+	setbuf(stdin, NULL);
 	scanf("%[^\n]s", pessoa->nome);
-	setbuf(stdin, NULL);
+
 	printf("\nDigite seu CPF: ");
-	scanf("%*[^0123456789]%s", pessoa->CPF);
 	setbuf(stdin, NULL);
+	scanf("%s", pessoa->CPF);
+
 	printf("\nDigite o numero do sua conta bancaria: ");
-	scanf("%*[^0123456789]%s", pessoa->conta_bancaria);
+	setbuf(stdin, NULL);
+	scanf("%s", pessoa->conta_bancaria);
 }
 
 void Gravar_Arquivo(Lista_est *Teatro) {
@@ -579,7 +580,7 @@ int main () {
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
 				int espe = Consultar_Espetaculo(Teatro, escolha);
-				if(espe > 0) {
+				if (espe != -1) {
 					if(!Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
 						printf("\nEscolha a poltrona Desejada: ");
 						char poltrona[4];
@@ -597,23 +598,21 @@ int main () {
 						}
 						Ler_Pessoa(&pessoa);
 						Vender_Ingresso(linha, coluna-1, Teatro.Item[espe].sessao, pessoa);
+					} else {
+						printf("\nSessão Cheia. Adicionando na lista de Espera");
+	                    Ler_Pessoa(&pessoa);
+	                    Enfileirar(&Teatro.Item[espe].fila_espera, pessoa);
+	                    printf("Adicionado na Lista de espera:\n");
+	                    Exibir_Pessoa(pessoa);
+					}
 				}
-				else {
-					printf("\nSessão Cheia. Adicionando na lista de Espera");
-                    Ler_Pessoa(&pessoa);
-                    Enfileirar(&Teatro.Item[espe].fila_espera, pessoa);
-                    printf("Adicionado na Lista de espera:\n");
-                    Exibir_Pessoa(pessoa);
-				}
-			}
-			break;
+				break;
 
 			case 5:
 			    printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                if(espe > 0) {
-					printf("Entrou aqui");
+				if (espe != -1) {
 					if(!Verificar_Sessao_Cheia(Teatro.Item[espe].sessao)) {
 						printf("\nEscolha a poltrona Desejada: ");
 						char poltrona[4];
@@ -630,8 +629,7 @@ int main () {
 						}
 						Ler_Pessoa(&pessoa);
 						Reservar_Ingresso(linha, coluna-1, Teatro.Item[espe].sessao, pessoa);
-					}
-					else {
+					} else {
 						printf("\nSessão Cheia. Adicionando na lista de Espera");
 						Ler_Pessoa(&pessoa);
 						Enfileirar(&Teatro.Item[espe].fila_espera, pessoa);
@@ -639,44 +637,52 @@ int main () {
 						Exibir_Pessoa(pessoa);
 					}
 				}
-			    break;
+				break;
 
 			case 6:
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                printf("\nEscolha a poltrona Desejada: ");
-                char poltrona[4];
-                scanf("%s", poltrona);
-                if(poltrona[0] > 90) {
-                    poltrona[0] = poltrona[0] - 32;
+                if (espe != -1) {
+                	printf("\nEscolha a poltrona Desejada: ");
+	                char poltrona[4];
+	                scanf("%s", poltrona);
+	                if(poltrona[0] > 90) {
+	                    poltrona[0] = poltrona[0] - 32;
+	                }
+	                int linha = poltrona[0] - 'A';
+	                int i = 1;
+	                int coluna = 0;
+	                while(poltrona[i] != '\0') {
+	                    coluna = (coluna * 10) + (poltrona[i] - '0');
+	                    i++;
+	                }
+	                Ler_Pessoa(&pessoa);
+	                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao);
                 }
-                int linha = poltrona[0] - 'A';
-                int i = 1;
-                int coluna = 0;
-                while(poltrona[i] != '\0') {
-                    coluna = (coluna * 10) + (poltrona[i] - '0');
-                    i++;
-                }
-                Confirmar_Reserva(linha, coluna-1, Teatro.Item[espe].sessao);
 			    break;
 
 			case 7:
 				printf("Digite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                Exibir_Fila_Espera(Teatro.Item[espe].fila_espera);
+                if (espe != -1) {
+                	Exibir_Fila_Espera(Teatro.Item[espe].fila_espera);
+				}
 	            break;
 
 			case 8:
 				printf("\nDigite o Codigo do Espetaculo: ");
 				scanf("%d", &escolha);
                 espe = Consultar_Espetaculo(Teatro, escolha);
-                Preencher(Teatro.Item[espe].sessao);
+                if (espe != -1) {
+                	Preencher(Teatro.Item[espe].sessao);
+				}
 	            break;
 
 			default:
 	            erros++;
+	            printf("\nErro: Opcao inexistente. Tentativas restantes = %d\n\n", LIMITE - erros);
 	            break;
 			}
 
