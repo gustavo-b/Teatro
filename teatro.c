@@ -171,7 +171,7 @@ void Insere_Elemento_Lista(Lista_est *Teatro, Espetaculo espetaculo) {
 					Teatro->Item[p] = espetaculo;
 					Teatro->Ult++;
 				}
-			}	
+			}
 		}
 	}
 }
@@ -304,7 +304,8 @@ void Ler_Data(long long *data) {
 	setbuf(stdin, NULL);
 	printf("\nHorario do espetaculo (hh:mm): ");
 	scanf("%s", hora);
-	
+	setbuf(stdin, NULL);
+
 	Data evento;
 	evento->tm_sec = 0;
 	evento->tm_min = ((hora[3] - '0') * 10) + (hora[4] - '0');
@@ -399,6 +400,19 @@ void Ler_Arquivo (Espetaculo *espetaculo, Lista_est *Teatro) {
         }
         fclose(arq);
     }
+}
+
+void Tirar_ListaEspera (Fila_est espera, Sessao sessao) {
+    int i, j;
+	for (i = 0; i < 18; i++) {
+		for (j = 0; j < 20; j++) {
+			if(sessao[i][j].status[0] == RESERVADO) {
+                sessao[i][j].status[0] = VENDIDO;
+                sessao[i][j].pessoa = espera.Item[espera.Inicio];
+                Desenfileirar(&espera, &sessao[i][j].pessoa);
+			}
+		}
+	}
 }
 
 void cls(void){
