@@ -158,19 +158,6 @@ void Exibir_Pessoa(Pessoa pessoa) {
 
 }
 
-int Get_Random_Int(int min, int max) {
-    int r;
-    const unsigned int range = 1 + max - min;
-    const unsigned int buckets = RAND_MAX / range;
-    const unsigned int limit = buckets * range;
-
-    do {
-        r = rand();
-    } while (r >= limit);
-
-    return min + (r / buckets);
-}
-
 void Exibir_Sessao(Sessao sessao) {
 	int i, j;
 	for (i = 0; i < 18; i++) {
@@ -267,8 +254,28 @@ void Tempo_Atual(time_t *data) {
 	*data = mktime(temp);
 }
 
-void Ler_Espetaculo(Espetaculo *espetaculo) {
+void Ler_Data(time_t *data) {
+	char dia[11], hora[6];
+	setbuf(stdin, NULL);
+	printf("\nData do espetaculo (dd/mm/aaaa): ");
+	scanf("%[^\n]s", dia);
+	setbuf(stdin, NULL);
+	printf("\nHorario do espetaculo (hh:mm): ");
+	scanf("%[^\n]s", hora);
+	
+	Data evento;
+	evento->tm_sec = 0;
+	evento->tm_min = (hora[3] - '0') * 10 + (hora[4] - '0');
+	evento->tm_hour = (hora[0] - '0') * 10 + (hora[1] - '0');
+	evento->tm_mday = (dia[0] - '0') * 10 + (dia[1] - '0');
+	evento->tm_mon = ((dia[3] - '0') * 10 + (dia[4] - '0')) - 1;
+	evento->tm_year = ((dia[6] - '0') * 1000 + (dia[7] - '0') * 100 + (dia[8] - '0') * 10 + (dia[9] - '0')) - 1900;
+	evento->tm_isdst = -1;
 
+	*data = mktime(evento);
+}
+
+void Ler_Espetaculo(Espetaculo *espetaculo) {
 	setbuf(stdin, NULL);
 	printf("\nNome do espetaculo: ");
 	scanf("%[^\n]s", espetaculo->nome);
@@ -279,7 +286,8 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 	printf("\nPreco do ingresso: ");
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
-	Tempo_Atual(&espetaculo->data); //Temporário
+	Tempo_Atual(&espetaculo->data);
+	Ler_Data(&espetaculo->data); //Temporário
 }
 
 void Exibir_Espetaculo(Espetaculo espetaculo) {
