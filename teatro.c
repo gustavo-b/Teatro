@@ -260,7 +260,7 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 }
 
 int Pessoa_Igual(Pessoa a, Pessoa b) {
-	if (a.conta_bancaria == b.conta_bancaria && a.CPF == b.CPF && strcmp(a.nome, b.nome) == 0) {
+	if (a.conta_bancaria == b.conta_bancaria && a.CPF == b.CPF && strcmp(a.nome, b.nome)) {
 		return 1;
 	}
 	return 0;
