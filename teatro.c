@@ -296,22 +296,22 @@ int Verificar_Sessao_Cheia(Sessao sessao) {
 	return 1;
 }
 
-void Ler_Data(time_t *data) {
+void Ler_Data(long long *data) {
 	char dia[11], hora[6];
 	setbuf(stdin, NULL);
 	printf("\nData do espetaculo (dd/mm/aaaa): ");
-	scanf("%[^\n]s", dia);
+	scanf("%s", dia);
 	setbuf(stdin, NULL);
 	printf("\nHorario do espetaculo (hh:mm): ");
-	scanf("%[^\n]s", hora);
+	scanf("%s", hora);
 	
 	Data evento;
 	evento->tm_sec = 0;
-	evento->tm_min = (hora[3] - '0') * 10 + (hora[4] - '0');
-	evento->tm_hour = (hora[0] - '0') * 10 + (hora[1] - '0');
-	evento->tm_mday = (dia[0] - '0') * 10 + (dia[1] - '0');
-	evento->tm_mon = ((dia[3] - '0') * 10 + (dia[4] - '0')) - 1;
-	evento->tm_year = ((dia[6] - '0') * 1000 + (dia[7] - '0') * 100 + (dia[8] - '0') * 10 + (dia[9] - '0')) - 1900;
+	evento->tm_min = ((hora[3] - '0') * 10) + (hora[4] - '0');
+	evento->tm_hour = ((hora[0] - '0') * 10) + (hora[1] - '0');
+	evento->tm_mday = ((dia[0] - '0') * 10) + (dia[1] - '0');
+	evento->tm_mon = (((dia[3] - '0') * 10) + (dia[4] - '0')) - 1;
+	evento->tm_year = (((((dia[6] - '0') * 1000) + (dia[7] - '0') * 100) + (dia[8] - '0') * 10) + (dia[9] - '0')) - 1900;
 	evento->tm_isdst = -1;
 
 	*data = mktime(evento);
@@ -329,7 +329,7 @@ void Ler_Espetaculo(Espetaculo *espetaculo) {
 	scanf("%f", &espetaculo->ingresso);
 	Inicializar_Sessao(espetaculo->sessao);
 	Tempo_Atual(&espetaculo->data);
-	Ler_Data(&espetaculo->data); //Temporário
+	Ler_Data(&espetaculo->data);
 }
 
 void Exibir_Todos_Espetaculos(Lista_est Teatro) {
