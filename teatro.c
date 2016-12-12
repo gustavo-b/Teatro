@@ -288,52 +288,33 @@ void Reservar_Ingresso(int l, int c, Sessao sessao, Pessoa pessoa) {
 }
 
 int Nome_Igual(Pessoa a, Pessoa b) {
-	if (strcmp(a.nome, b.nome) ==0 ) {
-	    return 1;
-    return 0;
+	return strcmp(a.nome, b.nome);
 }
 
 int CPF_Igual(Pessoa a, Pessoa b) {
-	if (strcmp(a.CPF, b.CPF) == 0) {
-        return 1;
-	}
-    return 0;
+	return strcmp(a.CPF, b.CPF);
 }
 
 int Conta_Igual(Pessoa a, Pessoa b) {
-	if (strcmp(a.conta_bancaria, b.conta_bancaria) == 0) {
-        return 1;
-	}
-	return 0;
+	return strcmp(a.conta_bancaria, b.conta_bancaria);
 }
 
 void Confirmar_Reserva(int l, int c, Sessao sessao) {
+    int opcao;
     Pessoa pessoa;
-    int opcao = 1;
     if(sessao[l][c].status[0] == RESERVADO) {
-        while (opcao != 0) {
+        do {
             Ler_Pessoa(&pessoa);
-            if (Nome_Igual(sessao[l][c].pessoa,pessoa) != 0) {
-                printf("O nome não está correto\nTentar novamente?\n1 = sim.\n0 = não.\n");
-                scanf("%d",&opcao);
+            if ((Nome_Igual(sessao[l][c].pessoa,pessoa)== 0) && (CPF_Igual(sessao[l][c].pessoa,pessoa)==0) && Conta_Igual(sessao[l][c].pessoa,pessoa)==0) {
+                sessao[l][c].status[0] = VENDIDO;
+                printf("Reserva confirmada com Sucesso.");
+                return;
             }
-            else if (CPF_Igual(sessao[l][c].pessoa,pessoa) != 0 && opcao == 1) {
-                printf("O CPF não está correto\nTentar novamente?\n1 = sim.\n0 = não.\n");
-                scanf("%d",&opcao);
+            else {
+                printf("\nReserva não confirmada, tentar novamente?\n1 = sim.\n0 = nao.\n");
+                scanf ("%d",&opcao);
             }
-            else if (Conta_Igual(sessao[l][c].pessoa,pessoa) != 0 && opcao == 1) {
-                printf("A conta não está correta\nTentar novamente?\n1 = sim.\n0 = não.\n");
-                scanf("%d",&opcao);
-            }
-        }
-        if (opcao = 0) {
-            printf("Confirmação da conta cancelada.");
-        }
-        else if (opcao = 1){
-            sessao[l][c].status[0] = VENDIDO;
-            printf("Reserva confirmada com Sucesso.");
-            opcao = 0;
-        }
+    }while (opcao != 0);
     }
 }
 
